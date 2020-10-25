@@ -36,19 +36,22 @@ def merge_datasets():
     df_title_basics = pickle.load(open("datasets/title.basics.sav", "rb"))
     df_title_ratings = pickle.load(open("datasets/title.ratings.sav", "rb"))
     df_title_crew = pickle.load(open("datasets/title.crew.sav", "rb"))
-    # df_title_principals = pickle.load(open("datasets/title.principals.sav","rb"))
+    df_title_principals = pickle.load(open("datasets/title.principals.sav","rb"))
 
     df_title_basics = df_title_basics[(df_title_basics.titleType == "movie") | (df_title_basics.titleType == "tvMovie")]
     df_title_basics.drop(["titleType", "originalTitle", "startYear", "endYear", "runtimeMinutes"], axis=1, inplace=True)
 
-    # df_title_principals.drop(["ordering", "category","job","characters"],axis=1,inplace=True)
+    df_title_principals.drop(["ordering", "category","job","characters"],axis=1,inplace=True)
+    df_title_principals = df_title_principals.groupby('tconst', as_index=False).agg({'tconst': 'first', 'nconst': ', '.join})
 
     data = pd.merge(df_title_basics, df_title_ratings, on="tconst")
     data = pd.merge(data, df_title_crew, on="tconst")
-    # data = pd.merge(data, df_title_principals, on="tconst")
-    data.info()  # debug
+    data = pd.merge(data, df_title_principals, on="tconst")
+
+    data.info()  # database information
 
     pickle.dump(data, open("datasets/title.merged.sav", "wb"))
+    print("File datasets/title.merged.sav saved.")
 
 
 urls = ['https://datasets.imdbws.com/title.basics.tsv.gz',
