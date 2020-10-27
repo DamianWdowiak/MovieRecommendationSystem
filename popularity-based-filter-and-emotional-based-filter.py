@@ -11,7 +11,7 @@ def weighted_rating(x, m=minimanlaLiczbaGlosow, C=sredniaOcenaWszystkichFilmow):
     v = x['numVotes']
     R = x['averageRating']
 
-    return (v / (v + m) * R) + (m / (m + v) * C)
+    return (v / (v + m) * R) + (m / (m + v) * C+1)
 
 
 q_data['score'] = q_data.apply(weighted_rating, axis=1)
