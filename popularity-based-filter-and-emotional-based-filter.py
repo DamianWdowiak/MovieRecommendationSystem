@@ -1,6 +1,6 @@
 import pickle
 
-data = pickle.load(open("title.merged.sav", "rb"))
+data = pickle.load(open("datasets/title.merged.sav", "rb"))
 
 sredniaOcenaWszystkichFilmow = data['averageRating'].mean()
 minimanlaLiczbaGlosow = data['numVotes'].quantile(0.90)
