@@ -16,3 +16,6 @@ prepare_imdb_datasets.py - generate title.merged.sav file contains database:
  7   writers        object 
  8   nconst         object 
 ```
+
+## Lind do pliku z ocenami 
+https://drive.google.com/file/d/1tCZI18Biuj89AZyPonq5REFYXjzv8AH7/view?usp=sharing

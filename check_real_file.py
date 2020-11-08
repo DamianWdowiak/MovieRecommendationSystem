@@ -3,7 +3,7 @@ import pickle
 import csv
 
 data1 = pd.read_csv("datasets/movies.csv")
-rate_big = pd.read_csv("C:/Users/Wiktoura/Desktop/PK/baza_uzytkownikow/big/ml-latest/ratings.csv",chunksize=10_000)
+rate_big = pd.read_csv("datasets/ratings.csv",chunksize=10_000)
 data = pickle.load(open("datasets/title.merged.sav", "rb"))
 file = open("slownikBIG.txt")
 
