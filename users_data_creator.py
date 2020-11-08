@@ -2,7 +2,7 @@ import pandas as pd
 import pickle
 import numpy as np
 
-data1 = pd.read_csv("C:/Users/Wiktoura/Desktop/PK/baza_uzytkownikow/big/ml-latest/movies.csv")
+data1 = pd.read_csv("datasets/movies.csv")
 data = pickle.load(open("datasets/title.merged.sav", "rb"))
 
 
