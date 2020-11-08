@@ -14,7 +14,6 @@ while True:
 
     if not rekord:
         break
-
     id = rekord.split('-')
     map[int(id[0])]=int(id[1])
 iterator = 0
