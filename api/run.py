@@ -35,7 +35,7 @@ def check_if_token_in_blacklist(decrypted_token):
 #--------------
 
 
-import models, resources
+import views,models, resources
 
 api.add_resource(resources.UserRegistration, '/registration')
 api.add_resource(resources.UserLogin, '/login')
