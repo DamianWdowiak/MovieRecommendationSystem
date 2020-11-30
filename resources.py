@@ -1,11 +1,18 @@
+import pandas
+import pickle
+from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required,
+                                get_jwt_identity, get_raw_jwt)
 from flask_restful import Resource, reqparse
-from models import UserModel
 from models import RevokedTokenModel
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from models import UserModel
+from filters.collaborative_based_filter import collaborative_filter
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='This field cannot be blank', required=True)
 parser.add_argument('password', help='This field cannot be blank', required=True)
+
+users_data = pandas.read_csv(open("datasets/user_db.csv", "rb"))
+titles_data = pickle.load(open("datasets/title.merged.sav", "rb"))
 
 
 class UserRegistration(Resource):
@@ -97,4 +104,16 @@ class SecretResource(Resource):
     def get(self):
         return {
             'answer': 42
+        }
+
+
+class Recommender(Resource):
+    @jwt_required
+    def get(self):
+        username = get_jwt_identity()
+        current_user = UserModel.find_by_username(username)
+        userId = current_user.id
+        recommendations = collaborative_filter(users_data, userId, 10)
+        return {
+            'data': recommendations
         }

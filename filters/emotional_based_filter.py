@@ -1,8 +1,8 @@
 import pickle
 
-from popularity_based_filter import weighted_rating
+from filters.popularity_based_filter import weighted_rating
 
-data = pickle.load(open("datasets/title.merged.sav", "rb"))
+data = pickle.load(open("../datasets/title.merged.sav", "rb"))
 
 emotions = {
     "Scary": "Horror|Thriller",

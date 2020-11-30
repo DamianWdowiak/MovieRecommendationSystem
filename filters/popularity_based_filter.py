@@ -1,6 +1,6 @@
 import pickle
 
-data = pickle.load(open("datasets/title.merged.sav", "rb"))
+data = pickle.load(open("../datasets/title.merged.sav", "rb"))
 average_rating_of_all_film = data['averageRating'].mean()
 down_boundary = data['numVotes'].quantile(0.90)
 

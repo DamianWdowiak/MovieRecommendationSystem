@@ -12,7 +12,7 @@ def concat(x):
 
 
 def contentBasedRecommendations(title, howManySuggestions=10):
-    data = pickle.load(open("datasets/title.merged.sav", "rb"))
+    data = pickle.load(open("../datasets/title.merged.sav", "rb"))
     data['key_data'] = data.apply(concat, axis=1)
 
     count = CountVectorizer()

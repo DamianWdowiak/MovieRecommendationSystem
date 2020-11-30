@@ -2,12 +2,12 @@ import csv
 
 import pandas as pd
 
-rate_big = pd.read_csv("datasets/ratings.csv", chunksize=10_000)
-file = pd.read_csv("datasets/links.csv")
+rate_big = pd.read_csv("../datasets/ratings.csv", chunksize=10_000)
+file = pd.read_csv("../datasets/links.csv")
 
 iterator = 0
 for rate in rate_big:
-    with open('datasets/user_db.csv', mode='a', newline='\n') as csv_file:
+    with open('../datasets/user_db.csv', mode='a', newline='\n') as csv_file:
 
         fieldnames = ['userId', 'tconst', 'rating']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)

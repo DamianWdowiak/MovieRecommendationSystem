@@ -10,13 +10,13 @@ import requests
 def download_datasets(urls):
     for url in urls:
         filename = url.split("/")[-1]
-        with open("datasets/" + filename, "wb") as f:
+        with open("../datasets/" + filename, "wb") as f:
             r = requests.get(url)
             f.write(r.content)
 
 
 def extract_datasets():
-    gz_files = glob.glob("datasets/*.gz")
+    gz_files = glob.glob("../datasets/*.gz")
     for file in gz_files:
         with gzip.open(file, 'rb') as f:
             filename = file[:-3]
@@ -25,7 +25,7 @@ def extract_datasets():
 
 
 def convert_datasets():
-    tsv_files = glob.glob("datasets/*.tsv")
+    tsv_files = glob.glob("../datasets/*.tsv")
     for file in tsv_files:
         print(file)
         pickle.dump(pd.read_table(file, sep="\t", low_memory=False, na_values=["\\N", "nan"]),
@@ -33,10 +33,10 @@ def convert_datasets():
 
 
 def merge_datasets():
-    df_title_basics = pickle.load(open("datasets/title.basics.sav", "rb"))
-    df_title_ratings = pickle.load(open("datasets/title.ratings.sav", "rb"))
-    df_title_crew = pickle.load(open("datasets/title.crew.sav", "rb"))
-    df_title_principals = pickle.load(open("datasets/title.principals.sav", "rb"))
+    df_title_basics = pickle.load(open("../datasets/title.basics.sav", "rb"))
+    df_title_ratings = pickle.load(open("../datasets/title.ratings.sav", "rb"))
+    df_title_crew = pickle.load(open("../datasets/title.crew.sav", "rb"))
+    df_title_principals = pickle.load(open("../datasets/title.principals.sav", "rb"))
 
     df_title_basics = df_title_basics[(df_title_basics.titleType == "movie") | (df_title_basics.titleType == "tvMovie")]
     df_title_basics.drop(["titleType", "originalTitle", "startYear", "endYear", "runtimeMinutes"], axis=1, inplace=True)
@@ -52,7 +52,7 @@ def merge_datasets():
 
     data.info()  # database information
 
-    pickle.dump(data, open("datasets/title.merged.sav", "wb"))
+    pickle.dump(data, open("../datasets/title.merged.sav", "wb"))
     print("File datasets/title.merged.sav saved.")
 
 
