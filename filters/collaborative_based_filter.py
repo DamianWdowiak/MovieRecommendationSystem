@@ -40,10 +40,10 @@ def collaborative_filter(users_data, userId, n_recommendations=10):
         fin = pandas.concat([temp, corr], axis=1)
 
         fin.columns = ['t_score', 'correlation']
-        fin['score'] = fin.apply(lambda x: x['t_score'] * x['correlation'], axis=1)
+        fin['score'] = fin.apply(lambda x: x['t_score'] * x['correlation'] * (1 - x['correlation']), axis=1)
         score_sum = fin['score'].sum()
         correlation_sum = fin['correlation'].sum()
-        final_score = (score_sum / correlation_sum) * (1 - correlation_sum)
+        final_score = (score_sum / correlation_sum)
 
         score.append(final_score)
 
