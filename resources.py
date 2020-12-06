@@ -1,11 +1,15 @@
-import pandas
 import pickle
+
+import pandas
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
 from flask_restful import Resource, reqparse
+from sklearn.feature_extraction.text import CountVectorizer
+
+from filters.collaborative_based_filter import collaborative_filter
+from filters.content_based_filter import content_filter, concat
 from models import RevokedTokenModel
 from models import UserModel
-from filters.collaborative_based_filter import collaborative_filter
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='This field cannot be blank', required=True)
@@ -13,6 +17,10 @@ parser.add_argument('password', help='This field cannot be blank', required=True
 
 users_data = pandas.read_csv(open("datasets/user_db.csv", "rb"))
 titles_data = pickle.load(open("datasets/title.merged.sav", "rb"))
+titles_data['key_data'] = titles_data.apply(concat, axis=1)
+
+count = CountVectorizer()
+count_matrix = count.fit_transform(titles_data['key_data'])
 
 
 class UserRegistration(Resource):
@@ -107,13 +115,25 @@ class SecretResource(Resource):
         }
 
 
-class Recommender(Resource):
+class CollaborativeFilterRecommender(Resource):
     @jwt_required
     def get(self):
         username = get_jwt_identity()
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
-        recommendations = collaborative_filter(users_data, userId, 10)
+        recommendations = collaborative_filter(users_data, userId, n_recommendations=10)
+        return {
+            'data': recommendations
+        }
+
+
+class ContentFilterRecommender(Resource):
+    @jwt_required
+    def get(self):
+        username = get_jwt_identity()
+        current_user = UserModel.find_by_username(username)
+        userId = current_user.id
+        recommendations = content_filter(titles_data, users_data, count_matrix, userId, n_recommendations=10)
         return {
             'data': recommendations
         }

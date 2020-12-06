@@ -1,8 +1,5 @@
-import pickle
-
 import numpy as np
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -11,26 +8,23 @@ def concat(x):
         x['writers'].replace(',', ' '))
 
 
-def contentBasedRecommendations(title, howManySuggestions=10):
-    data = pickle.load(open("../datasets/title.merged.sav", "rb"))
-    data['key_data'] = data.apply(concat, axis=1)
+def content_filter(titles_data, users_data, count_matrix, userId, n_recommendations=10):
+    movies_watched_by_user = users_data[users_data.userId == userId].sort_values(by='rating', ascending=False).tconst
+    top_rated_by_user = movies_watched_by_user[:10]
 
-    count = CountVectorizer()
-    count_matrix = count.fit_transform(data['key_data'])
+    recommended_movies = set()
+    for tconst in top_rated_by_user:
+        id = ((np.where(titles_data.tconst == tconst))[0])[0]
 
-    id = ((np.where(data["primaryTitle"] == title))[0])[0]
+        cosine_sim = cosine_similarity(count_matrix[id], count_matrix)
 
-    cosine_sim = cosine_similarity(count_matrix[id], count_matrix)
+        score_series = pd.Series(cosine_sim[0]).sort_values(ascending=False)
 
-    recommended_movies = []
+        top_indexes = list(score_series.iloc[0:n_recommendations + 1].index)
 
-    score_series = pd.Series(cosine_sim[0]).sort_values(ascending=False)
+        for i in top_indexes:
+            movie = titles_data['tconst'].values[i]
+            if movie not in list(movies_watched_by_user):
+                recommended_movies.add(movie)
 
-    top_indexes = list(score_series.iloc[0:howManySuggestions + 1].index)
-
-    for i in top_indexes:
-        recommended_movies.append(list(data['primaryTitle'])[i])
-
-    recommended_movies.remove(title)
-
-    return recommended_movies
+    return list(recommended_movies)[: n_recommendations]
