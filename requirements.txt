@@ -4,7 +4,7 @@ flask_jwt_extended==3.25.0
 flask_restful==0.3.8
 flask_sqlalchemy==2.4.4
 numpy==1.19.5
-pandas==1.2.0
+pandas
 passlib==1.7.4
 scikit_learn==0.24.0
 scipy==1.6.0
