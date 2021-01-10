@@ -2,3 +2,4 @@
 __pycache__/
 filters/__pycache__/
 venv/
+.datasets/users_database.db
