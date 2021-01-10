@@ -45,4 +45,5 @@ api.add_resource(resources.SecretResource, '/secret')
 api.add_resource(resources.CollaborativeFilterRecommender, '/recommender/collaborative')
 api.add_resource(resources.ContentFilterRecommender, '/recommender/content')
 
-app.run()
+if __name__ == '__main__':
+    app.run()
