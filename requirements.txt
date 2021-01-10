@@ -7,5 +7,5 @@ numpy==1.19.5
 pandas
 passlib==1.7.4
 scikit_learn==0.24.0
-scipy==1.6.0
+scipy
 gunicorn==20.0.4
