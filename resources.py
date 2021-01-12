@@ -139,7 +139,7 @@ class Film(Resource):
             return jsonify(titles_data[titles_data['tconst'] == filmId].values.tolist())
         else:
             size = 10
-            page = 1
+            page = getPage(self)
 
             start_index = (page-1)*size
             end_index = (page*size)
@@ -159,7 +159,7 @@ class User(Resource):
         data = users_data[users_data['userId'] == userId]
 
         size = 10
-        page = getPage()
+        page = getPage(self)
 
         start_index = (page - 1) * size
         end_index = (page * size)
@@ -178,7 +178,7 @@ class User(Resource):
 
     @jwt_required
     def put(self, filmId=None):
-        if request.args.get('rating') is not None:
+        if request.args.get('rating') is not None and filmId is not None:
             username = get_jwt_identity()
             current_user = UserModel.find_by_username(username)
             userId = current_user.id
