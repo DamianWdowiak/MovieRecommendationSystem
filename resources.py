@@ -139,7 +139,7 @@ class Film(Resource):
             return jsonify(titles_data[titles_data['tconst'] == filmId].values.tolist())
         else:
             size = 10
-            page = self.getPage()
+            page = 1
 
             start_index = (page-1)*size
             end_index = (page*size)
