@@ -41,8 +41,10 @@ api.add_resource(resources.UserLogoutAccess, '/logout/access')
 api.add_resource(resources.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/token/refresh')
 api.add_resource(resources.AllUsers, '/users')
-api.add_resource(resources.SecretResource, '/secret')
 api.add_resource(resources.CollaborativeFilterRecommender, '/recommender/collaborative')
 api.add_resource(resources.ContentFilterRecommender, '/recommender/content')
+api.add_resource(resources.Film, '/films', '/films/<filmId>')
+api.add_resource(resources.User, '/user', '/user/<filmId>')
+
 
 app.run()

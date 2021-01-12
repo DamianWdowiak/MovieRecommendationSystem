@@ -1,0 +1,5 @@
+.idea/
+__pycache__/
+datasets/users_database.db
+filters/__pycache__/
+venv/
