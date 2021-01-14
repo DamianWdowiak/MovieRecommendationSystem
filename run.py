@@ -3,6 +3,8 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 
+ONE_DAY = 24*60*60
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -25,6 +27,7 @@ jwt = JWTManager(app)
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = int(ONE_DAY)
 
 
 @jwt.token_in_blacklist_loader

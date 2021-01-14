@@ -158,6 +158,9 @@ class User(Resource):
         userId = current_user.id
         data = users_data[users_data['userId'] == userId]
 
+        if filmId is not None:
+            return jsonify(data[data['tconst'] == filmId].values.tolist())
+
         size = 10
         page = getPage(self)
 
@@ -168,12 +171,15 @@ class User(Resource):
 
     @jwt_required
     def post(self, filmId=None):
-        if request.args.get('tconst') is not None and request.args.get('rating') is not None:
+        if filmId is not None and request.args.get('rating') is not None:
             username = get_jwt_identity()
             current_user = UserModel.find_by_username(username)
             userId = current_user.id
-            users_data.append([userId, request.args.get('tconst'), request.args.get('rating')])
-            return {'tconst': request.args.get('tconst'), 'rating': request.args.get('rating')}
+
+            global users_data
+            users_data = users_data.append({'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')}, ignore_index=True)
+
+            return {'tconst': filmId, 'rating': request.args.get('rating')}
         abort(422)
 
     @jwt_required
