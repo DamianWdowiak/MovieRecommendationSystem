@@ -187,10 +187,12 @@ class User(Resource):
             userId = current_user.id
 
             global users_data
-            users_data = users_data.append({'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
-                                           ignore_index=True)
 
-            return {'tconst': filmId, 'rating': request.args.get('rating')}
+            if not ((users_data['userId'] == userId) & (users_data['tconst'] == filmId)).any():
+                users_data = users_data.append({'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
+                                               ignore_index=True)
+
+                return {'tconst': filmId, 'rating': request.args.get('rating')}
         abort(422)
 
     @jwt_required
