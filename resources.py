@@ -1,11 +1,11 @@
 import pickle
 
 import pandas
+from flask import jsonify
+from flask import request
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
 from flask_restful import Resource, reqparse, abort
-from flask import request
-from flask import jsonify
 from sklearn.feature_extraction.text import CountVectorizer
 
 from filters.collaborative_based_filter import collaborative_filter
@@ -23,6 +23,8 @@ titles_data['key_data'] = titles_data.apply(concat, axis=1)
 
 count = CountVectorizer()
 count_matrix = count.fit_transform(titles_data['key_data'])
+
+from filters.popularity_based_filter import getTopN
 
 
 class UserRegistration(Resource):
@@ -115,7 +117,7 @@ class CollaborativeFilterRecommender(Resource):
         username = get_jwt_identity()
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
-        recommendations = collaborative_filter(users_data, userId, n_recommendations=10)
+        recommendations = collaborative_filter(users_data, userId, n_recommendations=30)
         return {
             'data': recommendations
         }
@@ -127,25 +129,33 @@ class ContentFilterRecommender(Resource):
         username = get_jwt_identity()
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
-        recommendations = content_filter(titles_data, users_data, count_matrix, userId, n_recommendations=10)
+        recommendations = content_filter(titles_data, users_data, count_matrix, userId, n_recommendations=30)
         return {
             'data': recommendations
         }
 
 
+class PopularityFilterRecommender(Resource):
+    @jwt_required
+    def get(self):
+        recommendations = getTopN(30)
+        return jsonify(recommendations.values.tolist())
+
+
 class Film(Resource):
-    def get(self, filmId = None):
+    def get(self, filmId=None):
         if filmId is not None:
             return jsonify(titles_data[titles_data['tconst'] == filmId].values.tolist())
         else:
             size = 10
             page = getPage(self)
 
-            start_index = (page-1)*size
-            end_index = (page*size)
+            start_index = (page - 1) * size
+            end_index = (page * size)
 
             if request.args.get('title') is not None:
-                return jsonify(titles_data[titles_data['primaryTitle'].str.contains(request.args.get('title'))][start_index:end_index].values.tolist())
+                return jsonify(titles_data[titles_data['primaryTitle'].str.contains(request.args.get('title'))][
+                               start_index:end_index].values.tolist())
             else:
                 return jsonify(titles_data[start_index:end_index].values.tolist())
 
@@ -177,7 +187,8 @@ class User(Resource):
             userId = current_user.id
 
             global users_data
-            users_data = users_data.append({'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')}, ignore_index=True)
+            users_data = users_data.append({'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
+                                           ignore_index=True)
 
             return {'tconst': filmId, 'rating': request.args.get('rating')}
         abort(422)
@@ -188,8 +199,10 @@ class User(Resource):
             username = get_jwt_identity()
             current_user = UserModel.find_by_username(username)
             userId = current_user.id
-            users_data.loc[(users_data['userId'] == userId) & (users_data['tconst'] == filmId), 'rating'] = float(request.args.get('rating'))
-            return jsonify(users_data.loc[(users_data['userId'] == userId) & (users_data['tconst'] == filmId)].values.tolist())
+            users_data.loc[(users_data['userId'] == userId) & (users_data['tconst'] == filmId), 'rating'] = float(
+                request.args.get('rating'))
+            return jsonify(
+                users_data.loc[(users_data['userId'] == userId) & (users_data['tconst'] == filmId)].values.tolist())
         abort(422)
 
 

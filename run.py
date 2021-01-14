@@ -48,6 +48,7 @@ api.add_resource(resources.CollaborativeFilterRecommender, '/recommender/collabo
 api.add_resource(resources.ContentFilterRecommender, '/recommender/content')
 api.add_resource(resources.Film, '/films', '/films/<filmId>')
 api.add_resource(resources.User, '/user', '/user/<filmId>')
+api.add_resource(resources.PopularityFilterRecommender, '/recommender/popularity')
 
 
 app.run()
