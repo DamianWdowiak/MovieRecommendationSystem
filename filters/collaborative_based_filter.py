@@ -9,8 +9,7 @@ def collaborative_filter(users_data, userId, n_recommendations=10):
     check = users_data.pivot_table(index='userId', columns='tconst', values='rating')
     pivot_matrix = check.fillna(check.mean(axis=0))
 
-    pivot_matrix_values = csr_matrix(pivot_matrix.values)
-    model_knn.fit(pivot_matrix_values)
+    model_knn.fit(csr_matrix(pivot_matrix.values))
 
     distances, indices = model_knn.kneighbors(pivot_matrix.iloc[userId - 1, :].values.reshape(1, -1), n_neighbors=31)
 
