@@ -2,20 +2,16 @@
 [ML] Movie Recommendation System
 
 ## Usage
-prepare_imdb_datasets.py - generate title.merged.sav file contains database:
+prepare_imdb_datasets.py - generates title.merged.sav file contains database:
 ```
  N   Column         Dtype  
 ---  ------         -----  
  0   tconst         object 
  1   primaryTitle   object 
- 2   isAdult        int64  
- 3   genres         object 
- 4   averageRating  float64
- 5   numVotes       int64  
- 6   directors      object 
- 7   writers        object 
- 8   nconst         object 
+ 2   genres         object 
+ 3   averageRating  float64
+ 4   numVotes       int64  
+ 5   key_data       object  
 ```
 
-## Lind do pliku z ocenami 
-https://drive.google.com/file/d/1tCZI18Biuj89AZyPonq5REFYXjzv8AH7/view?usp=sharing
+Information courtesy of IMDb (http://www.imdb.com). Used with permission.

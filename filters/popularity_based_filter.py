@@ -1,4 +1,3 @@
-import pickle
 from resources import titles_data
 
 data = titles_data

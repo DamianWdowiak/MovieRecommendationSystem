@@ -1,15 +1,14 @@
 import pickle
-
+import joblib
 import pandas
 from flask import jsonify
 from flask import request
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
 from flask_restful import Resource, reqparse, abort
-from sklearn.feature_extraction.text import CountVectorizer
 
 from filters.collaborative_based_filter import collaborative_filter
-from filters.content_based_filter import content_filter, concat
+from filters.content_based_filter import content_filter
 from models import RevokedTokenModel
 from models import UserModel
 
@@ -19,10 +18,8 @@ parser.add_argument('password', help='This field cannot be blank', required=True
 
 users_data = pandas.read_csv(open("datasets/user_db.csv", "rb"))
 titles_data = pickle.load(open("datasets/title.merged.sav", "rb"))
-titles_data['key_data'] = titles_data.apply(concat, axis=1)
 
-count = CountVectorizer()
-count_matrix = count.fit_transform(titles_data['key_data'])
+count_matrix = joblib.load('datasets/count_matrix.joblib')
 
 from filters.popularity_based_filter import getTopN
 
@@ -189,8 +186,9 @@ class User(Resource):
             global users_data
 
             if not ((users_data['userId'] == userId) & (users_data['tconst'] == filmId)).any():
-                users_data = users_data.append({'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
-                                               ignore_index=True)
+                users_data = users_data.append(
+                    {'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
+                    ignore_index=True)
 
                 return {'tconst': filmId, 'rating': request.args.get('rating')}
         abort(422)

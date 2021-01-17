@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 
-ONE_DAY = 24*60*60
+ONE_DAY = 24 * 60 * 60
 
 app = Flask(__name__)
 api = Api(app)
@@ -50,5 +50,5 @@ api.add_resource(resources.Film, '/films', '/films/<filmId>')
 api.add_resource(resources.User, '/user', '/user/<filmId>')
 api.add_resource(resources.PopularityFilterRecommender, '/recommender/popularity')
 
-
-app.run()
+if __name__ == '__main__':
+    app.run()

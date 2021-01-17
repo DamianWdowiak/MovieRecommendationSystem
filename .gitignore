@@ -3,3 +3,4 @@ __pycache__/
 datasets/users_database.db
 filters/__pycache__/
 venv/
+playground.py
