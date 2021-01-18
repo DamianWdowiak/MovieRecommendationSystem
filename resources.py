@@ -9,8 +9,7 @@ from flask_restful import Resource, reqparse, abort
 
 from filters.collaborative_based_filter import collaborative_filter
 from filters.content_based_filter import content_filter
-from models import RevokedTokenModel
-from models import UserModel
+from models import RevokedTokenModel, UserModel
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='This field cannot be blank', required=True)
@@ -100,14 +99,6 @@ class TokenRefresh(Resource):
         return {'access_token': access_token}
 
 
-class AllUsers(Resource):
-    def get(self):
-        return UserModel.return_all()
-
-    def delete(self):
-        return UserModel.delete_all()
-
-
 class CollaborativeFilterRecommender(Resource):
     @jwt_required
     def get(self):
@@ -145,7 +136,7 @@ class Film(Resource):
             return jsonify(titles_data[titles_data['tconst'] == filmId].values.tolist())
         else:
             size = 10
-            page = getPage(self)
+            page = getPage()
 
             start_index = (page - 1) * size
             end_index = (page * size)
@@ -169,7 +160,7 @@ class User(Resource):
             return jsonify(data[data['tconst'] == filmId].values.tolist())
 
         size = 10
-        page = getPage(self)
+        page = getPage()
 
         start_index = (page - 1) * size
         end_index = (page * size)
@@ -206,7 +197,7 @@ class User(Resource):
         abort(422)
 
 
-def getPage(self):
+def getPage():
     page = 1
     if request.args.get('page') is not None:
         try:

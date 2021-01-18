@@ -14,10 +14,10 @@ app.config['SECRET_KEY'] = 'some-secret-string'
 
 db = SQLAlchemy(app)
 
+import views, models, resources
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+db.create_all()
+db.session.commit()
 
 
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
@@ -36,14 +36,11 @@ def check_if_token_in_blacklist(decrypted_token):
     return models.RevokedTokenModel.is_jti_blacklisted(jti)
 
 
-import views, models, resources
-
 api.add_resource(resources.UserRegistration, '/registration')
 api.add_resource(resources.UserLogin, '/login')
 api.add_resource(resources.UserLogoutAccess, '/logout/access')
 api.add_resource(resources.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/token/refresh')
-api.add_resource(resources.AllUsers, '/users')
 api.add_resource(resources.CollaborativeFilterRecommender, '/recommender/collaborative')
 api.add_resource(resources.ContentFilterRecommender, '/recommender/content')
 api.add_resource(resources.Film, '/films', '/films/<filmId>')
