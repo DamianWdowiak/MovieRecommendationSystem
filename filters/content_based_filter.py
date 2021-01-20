@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from resources import titles_data, users_data, count_matrix
 
 
-def content_filter(titles_data, users_data, count_matrix, userId, n_recommendations=10):
+def content_filter(userId, n_recommendations=10):
     movies_watched_by_user = users_data[users_data.userId == userId].sort_values(by='rating', ascending=False).tconst
     top_rated_by_user = movies_watched_by_user[:10]
 
