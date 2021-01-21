@@ -1,4 +1,5 @@
 import pickle
+
 import joblib
 import pandas
 from flask import jsonify
@@ -109,7 +110,7 @@ class CollaborativeFilterRecommender(Resource):
         if users_data[users_data.userId == userId].count().userId >= 10:
             recommendations = collaborative_filter(users_data, userId, n_recommendations=30)
         else:
-            recommendations = list(popularity_filter().tconst)[30:60]
+            recommendations = list(popularity_filter(users_data, userId).tconst)[30:60]
 
         return {
             'data': recommendations
@@ -125,7 +126,7 @@ class ContentFilterRecommender(Resource):
         if users_data[users_data.userId == userId].count().userId >= 10:
             recommendations = content_filter(users_data, userId, n_recommendations=30)
         else:
-            recommendations = list(popularity_filter().tconst)[60:90]
+            recommendations = list(popularity_filter(users_data, userId).tconst)[60:90]
 
         return {
             'data': recommendations
@@ -135,7 +136,10 @@ class ContentFilterRecommender(Resource):
 class PopularityFilterRecommender(Resource):
     @jwt_required
     def get(self):
-        recommendations = popularity_filter()
+        username = get_jwt_identity()
+        current_user = UserModel.find_by_username(username)
+        userId = current_user.id
+        recommendations = popularity_filter(users_data, userId)
         return jsonify(recommendations.values.tolist()[0:30])
 
 
