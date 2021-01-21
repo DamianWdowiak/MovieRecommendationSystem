@@ -16,7 +16,7 @@ def content_filter(userId, n_recommendations=10):
 
         score_series = pd.Series(cosine_sim[0]).sort_values(ascending=False)
 
-        top_indexes = list(score_series.iloc[0:n_recommendations + 1].index)
+        top_indexes = list(score_series.iloc[1:n_recommendations + 1].index)
 
         for i in top_indexes:
             movie = titles_data['tconst'].values[i]

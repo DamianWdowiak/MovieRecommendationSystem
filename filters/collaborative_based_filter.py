@@ -12,7 +12,7 @@ def collaborative_filter(userId, n_recommendations=10):
 
     model_knn.fit(csr_matrix(pivot_matrix.values))
 
-    distances, indices = model_knn.kneighbors(pivot_matrix.iloc[userId - 1, :].values.reshape(1, -1), n_neighbors=31)
+    distances, indices = model_knn.kneighbors(pivot_matrix.loc[userId, :].values.reshape(1, -1), n_neighbors=31)
 
     users = pivot_matrix.index[indices.flatten()]
     users = users[1:].tolist()
