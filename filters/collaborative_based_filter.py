@@ -1,10 +1,9 @@
 import pandas
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
-from resources import users_data
 
 
-def collaborative_filter(userId, n_recommendations=10):
+def collaborative_filter(users_data, userId, n_recommendations=10):
     model_knn = NearestNeighbors(metric='cosine', algorithm='brute', n_jobs=-1)
 
     check = users_data.pivot_table(index='userId', columns='tconst', values='rating')

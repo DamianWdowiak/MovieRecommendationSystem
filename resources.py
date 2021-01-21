@@ -107,7 +107,7 @@ class CollaborativeFilterRecommender(Resource):
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
         if users_data[users_data.userId == userId].count().userId >= 10:
-            recommendations = collaborative_filter(userId, n_recommendations=30)
+            recommendations = collaborative_filter(users_data, userId, n_recommendations=30)
         else:
             recommendations = list(popularity_filter().tconst)[30:60]
 
@@ -123,7 +123,7 @@ class ContentFilterRecommender(Resource):
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
         if users_data[users_data.userId == userId].count().userId >= 10:
-            recommendations = content_filter(userId, n_recommendations=30)
+            recommendations = content_filter(users_data, userId, n_recommendations=30)
         else:
             recommendations = list(popularity_filter().tconst)[60:90]
 
@@ -193,6 +193,8 @@ class User(Resource):
                 users_data.to_csv("datasets/user_db.csv", index=False)
 
                 return {'tconst': filmId, 'rating': request.args.get('rating')}
+            else:
+                return self.put(filmId)
         abort(422)
 
     @jwt_required
