@@ -7,8 +7,6 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_r
                                 get_jwt_identity, get_raw_jwt)
 from flask_restful import Resource, reqparse, abort
 
-from filters.collaborative_based_filter import collaborative_filter
-from filters.content_based_filter import content_filter
 from models import RevokedTokenModel, UserModel
 
 parser = reqparse.RequestParser()
@@ -20,7 +18,9 @@ titles_data = pickle.load(open("datasets/title.merged.sav", "rb"))
 
 count_matrix = joblib.load('datasets/count_matrix.joblib')
 
-from filters.popularity_based_filter import getTopN
+from filters.popularity_based_filter import popularity_filter
+from filters.collaborative_based_filter import collaborative_filter
+from filters.content_based_filter import content_filter
 
 
 class UserRegistration(Resource):
@@ -105,7 +105,11 @@ class CollaborativeFilterRecommender(Resource):
         username = get_jwt_identity()
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
-        recommendations = collaborative_filter(users_data, userId, n_recommendations=30)
+        if users_data[users_data.userId == userId].count().userId >= 10:
+            recommendations = collaborative_filter(userId, n_recommendations=30)
+        else:
+            recommendations = list(popularity_filter().tconst)[30:60]
+
         return {
             'data': recommendations
         }
@@ -117,7 +121,11 @@ class ContentFilterRecommender(Resource):
         username = get_jwt_identity()
         current_user = UserModel.find_by_username(username)
         userId = current_user.id
-        recommendations = content_filter(titles_data, users_data, count_matrix, userId, n_recommendations=30)
+        if users_data[users_data.userId == userId].count().userId >= 10:
+            recommendations = content_filter(userId, n_recommendations=30)
+        else:
+            recommendations = list(popularity_filter().tconst)[60:90]
+
         return {
             'data': recommendations
         }
@@ -126,8 +134,8 @@ class ContentFilterRecommender(Resource):
 class PopularityFilterRecommender(Resource):
     @jwt_required
     def get(self):
-        recommendations = getTopN(30)
-        return jsonify(recommendations.values.tolist())
+        recommendations = popularity_filter()
+        return jsonify(recommendations.values.tolist()[0:30])
 
 
 class Film(Resource):
@@ -142,8 +150,9 @@ class Film(Resource):
             end_index = (page * size)
 
             if request.args.get('title') is not None:
-                return jsonify(titles_data[titles_data['primaryTitle'].str.contains(request.args.get('title'))][
-                               start_index:end_index].values.tolist())
+                return jsonify(
+                    titles_data[titles_data['primaryTitle'].str.contains(request.args.get('title'), case=False)][
+                    start_index:end_index].values.tolist())
             else:
                 return jsonify(titles_data[start_index:end_index].values.tolist())
 
@@ -180,6 +189,7 @@ class User(Resource):
                 users_data = users_data.append(
                     {'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
                     ignore_index=True)
+                users_data.to_csv("datasets/user_db.csv", index=False)
 
                 return {'tconst': filmId, 'rating': request.args.get('rating')}
         abort(422)
@@ -192,6 +202,7 @@ class User(Resource):
             userId = current_user.id
             users_data.loc[(users_data['userId'] == userId) & (users_data['tconst'] == filmId), 'rating'] = float(
                 request.args.get('rating'))
+            users_data.to_csv("datasets/user_db.csv", index=False)
             return jsonify(
                 users_data.loc[(users_data['userId'] == userId) & (users_data['tconst'] == filmId)].values.tolist())
         abort(422)

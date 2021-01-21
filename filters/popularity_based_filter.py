@@ -12,8 +12,8 @@ def weighted_rating(x, m=down_boundary, C=average_rating_of_all_film):
     return (v / (v + m) * R) + (m / (m + v) * C)
 
 
-def getTopN(n_recommendations):
+def popularity_filter():
     q_data = data.copy().loc[data['numVotes'] >= down_boundary]
     q_data['score'] = q_data.apply(weighted_rating, axis=1)
     q_data = q_data.sort_values('score', ascending=False)
-    return q_data[['tconst', 'primaryTitle', 'averageRating']].head(n_recommendations)
+    return q_data[['tconst', 'primaryTitle', 'averageRating']]
