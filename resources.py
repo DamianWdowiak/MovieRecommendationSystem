@@ -60,6 +60,7 @@ class UserLogin(Resource):
             refresh_token = create_refresh_token(identity=data['username'])
             return {
                 'message': 'Logged in as {}'.format(current_user.username),
+                'id': 'UserID: {}'.format(current_user.id),
                 'access_token': access_token,
                 'refresh_token': refresh_token,
             }
@@ -187,7 +188,7 @@ class User(Resource):
 
             if not ((users_data['userId'] == userId) & (users_data['tconst'] == filmId)).any():
                 users_data = users_data.append(
-                    {'userId': userId, 'tconst': filmId, 'rating': request.args.get('rating')},
+                    {'userId': int(userId), 'tconst': filmId, 'rating': float(request.args.get('rating'))},
                     ignore_index=True)
                 users_data.to_csv("datasets/user_db.csv", index=False)
 
